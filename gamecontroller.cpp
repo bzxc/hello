@@ -1,18 +1,20 @@
 #include <QEvent>
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QMouseEvent>
 #include <iostream>
 #include "gamecontroller.h"
 #include "worrier.h"
-GameController::GameController(QGraphicsScene &scene, QObject *parent) :
+GameController::GameController(QGraphicsScene &scene, QGraphicsView &view, QObject *parent) :
     QObject(parent),
-    scene(scene),
+    scene_(scene),
+    view_(view),
     worrier(new Worrier(*this))
 {
     timer.start( 1000/33 );
 
-    scene.addItem(worrier);
-    scene.installEventFilter(this);
+    scene_.addItem(worrier);
+    view_.installEventFilter(this);
 
     resume();
 }
@@ -20,7 +22,7 @@ GameController::GameController(QGraphicsScene &scene, QObject *parent) :
 void GameController::resume()
 {
     connect(&timer, SIGNAL(timeout()),
-            &scene, SLOT(advance()));
+            &scene_, SLOT(advance()));
 }
 
 void GameController::handleMouseClicked(QMouseEvent *event)
